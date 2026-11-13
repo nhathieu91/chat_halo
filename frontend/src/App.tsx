@@ -2,7 +2,11 @@ import { Client } from '@stomp/stompjs';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 
 const API = import.meta.env.VITE_API_URL ?? 'http://localhost:8080';
-const WS = import.meta.env.VITE_WS_URL ?? 'ws://localhost:8080/ws';
+const websocketUrl = new URL(import.meta.env.VITE_WS_URL ?? 'ws://localhost:8080/ws');
+if (window.location.protocol === 'https:' && websocketUrl.protocol === 'ws:') {
+  websocketUrl.protocol = 'wss:';
+}
+const WS = websocketUrl.toString();
 
 type Room = { id: string; name: string; type: string; members: string[] };
 type ChatMessage = { id: string; roomId: string; sender: string; content: string; createdAt: string };
