@@ -1,5 +1,6 @@
 package com.example.chat.websocket;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -11,9 +12,14 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     private final StompAuthChannelInterceptor authInterceptor;
+    private final String allowedOrigin;
 
-    public WebSocketConfig(StompAuthChannelInterceptor authInterceptor) {
+    public WebSocketConfig(
+        StompAuthChannelInterceptor authInterceptor,
+        @Value("${app.cors.allowed-origin}") String allowedOrigin
+    ) {
         this.authInterceptor = authInterceptor;
+        this.allowedOrigin = allowedOrigin;
     }
 
     @Override
@@ -24,7 +30,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("http://localhost:*");
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(allowedOrigin);
     }
 
     @Override
